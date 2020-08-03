@@ -12,9 +12,10 @@ Student ID | Student Name | Contribution
 ## Description
 
 ## Environment
-Python - 3.7
-
-__Libraries__:
-    
-1. pymysql~=0.9.3 
+1. Python - 3.7
+2. Libraries
+    * pymysql~=0.9.3
+3. MySQL - 8 or higher
+> MySQL (5.7.22 or higher) is important for this project since after v5.7.22,
+> MySQL supports functions like `JSON_OBJECTAGG` which is used in the project
 
