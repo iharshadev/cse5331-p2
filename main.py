@@ -3,9 +3,14 @@ import re
 
 import pymysql
 
+from config import MySQLProps as props
+
 
 def clear_tables():
-    connection = pymysql.connect(host="34.86.150.93", user="root", password="DB2@SUM2020", database="project2")
+    connection = pymysql.connect(host=props.host,
+                                 user=props.user,
+                                 password=props.password,
+                                 database=props.dbname)
     tables_in_order = ["WORKS_ON", "DEPT_LOCATIONS", "PROJECT", "EMPLOYEE", "DEPARTMENT"]
     try:
         with connection.cursor() as cursor:
@@ -14,10 +19,16 @@ def clear_tables():
             print("All tables emptied successfully")
     except pymysql.MySQLError:
         print(f"Error while emptying tables")
+    finally:
+        cursor.close()
+        connection.close()
 
 
 def load_data(table):
-    connection = pymysql.connect(host="34.86.150.93", user="root", password="DB2@SUM2020", database="project2")
+    connection = pymysql.connect(host=props.host,
+                                 user=props.user,
+                                 password=props.password,
+                                 database=props.dbname)
     with open(f"data/{table}.txt", "rt") as file:
         reader = csv.reader(file)
         records = [format_insert_query(record, table) for record in reader]
@@ -31,6 +42,7 @@ def load_data(table):
             print("Error while establishing connection", e)
         finally:
             cursor.close()
+            connection.close()
 
 
 def format_as_sql_date(record):
