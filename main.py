@@ -103,7 +103,7 @@ load_mysql_table("EMPLOYEE")
 load_mysql_table("PROJECT")
 load_mysql_table("WORKS_ON")
 
-for root in ["project", "employee"]:
+for root in ["project", "employee", "department"]:
     documents = fetch_as_document(root)
     load_to_mongodb(documents, root)
     fetch_from_mongodb(root)
