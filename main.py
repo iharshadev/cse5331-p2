@@ -1,6 +1,7 @@
 import csv
 import json
 import re
+from pprint import pprint
 
 import pymongo
 import pymysql
@@ -22,7 +23,7 @@ def clear_tables():
         cursor.close()
 
 
-def load_data(table):
+def load_mysql_table(table):
     with open(f"data/{table}.txt", "rt") as file:
         reader = csv.reader(file)
         records = [format_insert_query(record, table) for record in reader]
@@ -31,7 +32,7 @@ def load_data(table):
             with mysql_client.cursor() as cursor:
                 cursor.execute(insert_query)
                 mysql_client.commit()
-                print(f"MySQL table - {table} populated successfully")
+                print(f"MySQL table - {table} populated successfully. Records inserted: {len(records)}")
         except pymysql.MySQLError as e:
             print("Error while establishing connection", e)
         finally:
@@ -42,28 +43,28 @@ def format_as_sql_date(record):
     return f"STR_TO_DATE({record}, '%d-%M-%Y')"
 
 
-def format_insert_query(record, tablename):
+def format_insert_query(record, table):
     record = [re.sub("[\"]", "", item) for item in record]
-    if tablename == "EMPLOYEE":
+    if table == "EMPLOYEE":
         record[4] = format_as_sql_date(record[4])
         return f"({','.join(record)})"
-    elif tablename == "DEPARTMENT":
+    elif table == "DEPARTMENT":
         record[3] = format_as_sql_date(record[3])
         return f"({','.join(record)})"
     else:
         return f"({','.join(record)})"
 
 
-def fetch_as_document(root):
+def fetch_as_document(document_root):
     document_query = None
-    with open(f"scripts/{root}-as-root.sql", "rt") as query_file:
+    with open(f"scripts/{document_root}-as-root.sql", "rt") as query_file:
         document_query = query_file.read()
     try:
         with mysql_client.cursor() as cursor:
             cursor.execute(document_query)
             return [json.loads(row[0]) for row in cursor.fetchall()]
     except pymysql.MySQLError as e:
-        print(f"Error while fetching data from MySQL in document format {root} as root", e)
+        print(f"Error while fetching data from MySQL in document format {document_root} as root", e)
     finally:
         cursor.close()
 
@@ -77,6 +78,14 @@ def load_to_mongodb(documents, collection_name):
     print(f"{len(documents)} documents inserted to the collection: {collection_name}s in MongoDB successfully")
 
 
+def fetch_from_mongodb(collection_name):
+    collection = mongo_client.db2[f"{collection_name}s"]
+    documents = collection.find({})
+    print(f"Documents retrieved from the collection {collection_name}s in MongoDB:")
+    for doc in documents:
+        pprint(doc)
+
+
 mysql_client = pymysql.connect(host=sql_props.host,
                                user=sql_props.user,
                                password=sql_props.password,
@@ -84,18 +93,17 @@ mysql_client = pymysql.connect(host=sql_props.host,
 
 mongo_client = pymongo.MongoClient(f"mongodb+srv://{mp.user}:{mp.password}@{mp.host}/{mp.dbname}")
 
-# empties the tables so data is freshly populated
+# empties the tables so data from files in `data/` directory is freshly inserted
 clear_tables()
 
-# Load data to MySQL tables. ORDER IS IMPORTANT
-load_data("DEPARTMENT")
-load_data("DEPT_LOCATIONS")
-load_data("EMPLOYEE")
-load_data("PROJECT")
-load_data("WORKS_ON")
+# Load data from files in `data/` directory to MySQL tables. ORDER IS IMPORTANT!
+load_mysql_table("DEPARTMENT")
+load_mysql_table("DEPT_LOCATIONS")
+load_mysql_table("EMPLOYEE")
+load_mysql_table("PROJECT")
+load_mysql_table("WORKS_ON")
 
-project_documents = fetch_as_document("project")
-load_to_mongodb(project_documents, "project")
-
-employee_documents = fetch_as_document("employee")
-load_to_mongodb(employee_documents, "employee")
+for root in ["project", "employee"]:
+    documents = fetch_as_document(root)
+    load_to_mongodb(documents, root)
+    fetch_from_mongodb(root)
