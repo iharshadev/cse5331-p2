@@ -1,12 +1,12 @@
 SELECT
     JSON_OBJECT(
-        'project_name', p.Pname,
-        'project_number', p.Pnumber,
-        'department_name', d.Dname,
-        'employees', JSON_ARRAYAGG(JSON_OBJECT(
-            'Fname',e.Fname,
-            'Lname', e.Lname,
-            'Hours', w.Hours
+        'PNAME', p.Pname,
+        'PNUMBER', p.Pnumber,
+        'DNAME', d.Dname,
+        'EMPLOYEES', JSON_ARRAYAGG(JSON_OBJECT(
+            'EMP_LNAME', e.Lname,
+            'EMP_FNAME',e.Fname,
+            'HOURS', w.Hours
         ))
     ) as project_document
 FROM

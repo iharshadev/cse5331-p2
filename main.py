@@ -107,3 +107,6 @@ for root in ["project", "employee", "department"]:
     documents = fetch_as_document(root)
     load_to_mongodb(documents, root)
     fetch_from_mongodb(root)
+
+mysql_client.close()
+mongo_client.close()
