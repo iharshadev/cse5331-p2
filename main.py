@@ -61,6 +61,7 @@ def format_insert_query(record, tablename):
         return f"({','.join(record)})"
 
 
+# empties the tables so data is freshly populated
 clear_tables()
 load_data("DEPARTMENT")
 load_data("DEPT_LOCATIONS")
