@@ -5,6 +5,7 @@ class MySQLProps:
     user = "root"
     password = "DB2atSUM2020"
 
+
 class MongoProps:
     user = "p2demo"
     host = "db2.tmzpw.mongodb.net"

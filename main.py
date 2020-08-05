@@ -5,6 +5,7 @@ from pprint import pprint
 
 import pymongo
 import pymysql
+from tabulate import tabulate
 
 from config import MongoProps as mp
 from config import MySQLProps as sql_props
@@ -69,6 +70,20 @@ def fetch_as_document(document_root):
         cursor.close()
 
 
+def fetch_as_relational(relational_root):
+    document_query = None
+    with open(f"scripts/{relational_root}-as-root-relational.sql", "rt") as query_file:
+        document_query = query_file.read()
+    try:
+        with mysql_client.cursor() as cursor:
+            cursor.execute(document_query)
+            return cursor.fetchall()
+    except pymysql.MySQLError as e:
+        print(f"Error while fetching data from MySQL in relational format {relational_root} as root", e)
+    finally:
+        cursor.close()
+
+
 def load_to_mongodb(documents, collection_name):
     # collection names : [projects, employees]
     collection = mongo_client.db2[f"{collection_name}s"]
@@ -86,6 +101,21 @@ def fetch_from_mongodb(collection_name):
         pprint(doc)
 
 
+header_lookup = {
+    "department": [
+        "Dept. Name", "Dept. Number", "Manager Lname",
+        "Manager Fname", "Emp Lname", "Emp Fname", "Emp Salary"
+    ],
+    "employee": [
+        "Emp Lname", "Emp Fname", "Dept. Name",
+        "Project Name", "Project Number", "Hours"
+    ],
+    "project": [
+        "Project Name", "Project Number", "Dept. Name",
+        "Emp Lname", "Emp Fname", "Hours"
+    ]
+
+}
 mysql_client = pymysql.connect(host=sql_props.host,
                                user=sql_props.user,
                                password=sql_props.password,
@@ -103,7 +133,13 @@ load_mysql_table("EMPLOYEE")
 load_mysql_table("PROJECT")
 load_mysql_table("WORKS_ON")
 
+input(f"Data loaded to MySQL successfully. This can be verified by querying {sql_props.dbname} "
+      f"database in MySQL. Press any key to continue.")
+
 for root in ["project", "employee", "department"]:
+    relational = fetch_as_relational(root)
+    print(tabulate(relational, headers=header_lookup[root], tablefmt="psql"))
+    input("Data fetched in relational format. Press any key to continue to fetch as document")
     documents = fetch_as_document(root)
     load_to_mongodb(documents, root)
     fetch_from_mongodb(root)
