@@ -17,9 +17,9 @@ def clear_tables():
         with mysql_client.cursor() as cursor:
             [cursor.execute(f"DELETE FROM {table};") for table in tables_in_order]
             mysql_client.commit()
-            print("All tables in MySQL emptied successfully")
-    except pymysql.MySQLError:
-        print(f"Error while emptying tables")
+            print("All tables in MySQL emptied for fresh insertion of data")
+    except pymysql.MySQLError as e:
+        print(f"Error while emptying tables", e)
     finally:
         cursor.close()
 
@@ -31,9 +31,9 @@ def load_mysql_table(table):
         insert_query = f"INSERT INTO {table} VALUES {','.join(records)};"
         try:
             with mysql_client.cursor() as cursor:
-                cursor.execute(insert_query)
+                num_rows_inserted = cursor.execute(insert_query)
                 mysql_client.commit()
-                print(f"MySQL table - {table} populated successfully. Records inserted: {len(records)}")
+                print(f"\t{num_rows_inserted} rows inserted to {table} table in MySQL")
         except pymysql.MySQLError as e:
             print("Error while establishing connection", e)
         finally:
@@ -90,15 +90,80 @@ def load_to_mongodb(documents, collection_name):
     collection.delete_many({})
     print(f"MongoDB collection {collection_name}s emptied for fresh insertion")
     [collection.insert_one(document) for document in documents]
-    print(f"{len(documents)} documents inserted to the collection: {collection_name}s in MongoDB successfully")
+    print(f"{len(documents)} documents inserted to the {collection_name}s collection in MongoDB successfully")
 
 
 def fetch_from_mongodb(collection_name):
     collection = mongo_client.db2[f"{collection_name}s"]
     documents = collection.find({})
     print(f"Documents retrieved from the collection {collection_name}s in MongoDB:")
+    res = []
     for doc in documents:
         pprint(doc)
+        res.append(doc)
+    return res
+
+
+def format_as_xml(documents, root):
+    xml = f'<?xml version="1.0" encoding="UTF-8"?>\n'
+    if root == "project":
+        children = []
+        for project in documents:
+            pnumber = project["PNUMBER"]
+            pname = project["PNAME"]
+            p = f'<PROJECT PNUMBER={pnumber} PNAME="{pname}">\n'
+            p += f"\t<EMPLOYEES>\n"
+            for emp in project["EMPLOYEES"]:
+                emp_lname = emp["EMP_LNAME"]
+                emp_fname = emp["EMP_FNAME"]
+                hours = emp["HOURS"]
+                p += f'\t\t<EMPLOYEE EMP_LNAME="{emp_lname}" EMP_FNAME="{emp_fname}" HOURS={hours} />\n'
+            p += f"\t</EMPLOYEES>\n"
+            p += f"</PROJECT>"
+            children.append(p)
+        xml += "\n".join(children)
+        return xml
+
+    elif root == "employee":
+        children = []
+        for employee in documents:
+            emp_lname = employee["EMP_LNAME"]
+            emp_fname = employee["EMP_FNAME"]
+            dname = employee["DNAME"]
+            e = f'<EMPLOYEE EMP_LNAME="{emp_lname}" EMP_FNAME="{emp_fname}" DNAME="{dname}">\n'
+            e += f'\t<PROJECTS>\n'
+            for project in employee["PROJECTS"]:
+                pname = project["PNAME"]
+                pnum = project["PNUMBER"]
+                hours = project["HOURS"]
+                e += f'\t\t<PROJECT PNAME="{pname}" PNUMBER={pnum} HOURS={hours} />\n'
+            e += "\t</PROJECTS>\n"
+            e += "</EMPLOYEE>"
+            children.append(e)
+        xml += "\n".join(children)
+        return xml
+
+    elif root == "department":
+        children = []
+        for dept in documents:
+            dname = dept["DNAME"]
+            dnumber = dept["DNUMBER"]
+            mgr_lname = dept["MGR_LNAME"]
+            mgr_fname = dept["MGR_FNAME"]
+            d = f'<DEPARTMENT DNAME="{dname}" DNUMBER="{dnumber}" MGR_LNAME="{mgr_lname}" MGR_FNAME="{mgr_fname}">\n'
+            d += f"\t<EMPLOYEES>\n"
+            for emp in dept["EMPLOYEES"]:
+                emp_lname = emp["EMP_LNAME"]
+                emp_fname = emp["EMP_FNAME"]
+                salary = emp["EMP_SALARY"]
+                d += f'\t\t<EMPLOYEE EMP_LNAME="{emp_lname}" EMP_FNAME="{emp_fname}" EMP_SALARY={salary} />\n'
+            d += "\t</EMPLOYEES>\n"
+            d += "</DEPARTMENT>"
+            children.append(d)
+        xml += "\n".join(children)
+        return xml
+    print("Unknown document root")
+    return None
 
 
 header_lookup = {
@@ -124,25 +189,28 @@ mysql_client = pymysql.connect(host=sql_props.host,
 mongo_client = pymongo.MongoClient(f"mongodb+srv://{mp.user}:{mp.password}@{mp.host}/{mp.dbname}")
 
 # empties the tables so data from files in `data/` directory is freshly inserted
-clear_tables()
+# clear_tables()
 
 # Load data from files in `data/` directory to MySQL tables. ORDER IS IMPORTANT!
-load_mysql_table("DEPARTMENT")
-load_mysql_table("DEPT_LOCATIONS")
-load_mysql_table("EMPLOYEE")
-load_mysql_table("PROJECT")
-load_mysql_table("WORKS_ON")
+# load_mysql_table("DEPARTMENT")
+# load_mysql_table("DEPT_LOCATIONS")
+# load_mysql_table("EMPLOYEE")
+# load_mysql_table("PROJECT")
+# load_mysql_table("WORKS_ON")
 
-input(f"Data loaded to MySQL successfully. This can be verified by querying {sql_props.dbname} "
-      f"database in MySQL. Press any key to continue.")
+print(f"Data loaded to MySQL successfully. Query the above tables in {sql_props.dbname} database in MySQL to verify.")
 
 for root in ["project", "employee", "department"]:
-    relational = fetch_as_relational(root)
-    print(tabulate(relational, headers=header_lookup[root], tablefmt="psql"))
-    input("Data fetched in relational format. Press any key to continue to fetch as document")
+    input(f"Press any key to display data in relational format for {root}")
+    print(tabulate(fetch_as_relational(root), headers=header_lookup[root], tablefmt="psql"))
+    input(f"Press any key to load data to MongoDB in document format for {root}")
     documents = fetch_as_document(root)
     load_to_mongodb(documents, root)
-    fetch_from_mongodb(root)
+    input(f"Press any key to display data in JSON format for {root}")
+    documents = fetch_from_mongodb(root)
+    print(f"{'-' * 30} FOR EXTRA CREDIT : XML document format {'-' * 30}")
+    input(f"Press any key to display data in XML format for {root}")
+    print(format_as_xml(documents, root))
 
 mysql_client.close()
 mongo_client.close()
