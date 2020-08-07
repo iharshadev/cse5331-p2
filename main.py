@@ -108,59 +108,65 @@ def format_as_xml(documents, root):
     xml = f'<?xml version="1.0" encoding="UTF-8"?>\n'
     if root == "project":
         children = []
+        xml += "<ALL_PROJECTS>"
         for project in documents:
             pnumber = project["PNUMBER"]
             pname = project["PNAME"]
-            p = f'<PROJECT PNUMBER={pnumber} PNAME="{pname}">\n'
-            p += f"\t<EMPLOYEES>\n"
+            p = f'\t<PROJECT PNUMBER={pnumber} PNAME="{pname}">\n'
+            p += f"\t\t<EMPLOYEES>\n"
             for emp in project["EMPLOYEES"]:
                 emp_lname = emp["EMP_LNAME"]
                 emp_fname = emp["EMP_FNAME"]
                 hours = emp["HOURS"]
-                p += f'\t\t<EMPLOYEE EMP_LNAME="{emp_lname}" EMP_FNAME="{emp_fname}" HOURS={hours} />\n'
-            p += f"\t</EMPLOYEES>\n"
-            p += f"</PROJECT>"
+                p += f'\t\t\t<EMPLOYEE EMP_LNAME="{emp_lname}" EMP_FNAME="{emp_fname}" HOURS={hours} />\n'
+            p += f"\t\t</EMPLOYEES>\n"
+            p += f"\t</PROJECT>"
             children.append(p)
         xml += "\n".join(children)
+        xml += "\n</ALL_PROJECTS>"
         return xml
 
     elif root == "employee":
         children = []
+        xml += "<ALL_EMPLOYEES>"
         for employee in documents:
             emp_lname = employee["EMP_LNAME"]
             emp_fname = employee["EMP_FNAME"]
             dname = employee["DNAME"]
-            e = f'<EMPLOYEE EMP_LNAME="{emp_lname}" EMP_FNAME="{emp_fname}" DNAME="{dname}">\n'
-            e += f'\t<PROJECTS>\n'
+            e = f'\t<EMPLOYEE EMP_LNAME="{emp_lname}" EMP_FNAME="{emp_fname}" DNAME="{dname}">\n'
+            e += f'\t\t<PROJECTS>\n'
             for project in employee["PROJECTS"]:
                 pname = project["PNAME"]
                 pnum = project["PNUMBER"]
                 hours = project["HOURS"]
-                e += f'\t\t<PROJECT PNAME="{pname}" PNUMBER={pnum} HOURS={hours} />\n'
-            e += "\t</PROJECTS>\n"
-            e += "</EMPLOYEE>"
+                e += f'\t\t\t<PROJECT PNAME="{pname}" PNUMBER={pnum} HOURS={hours} />\n'
+            e += "\t\t</PROJECTS>\n"
+            e += "\t</EMPLOYEE>"
             children.append(e)
         xml += "\n".join(children)
+        xml += "\n</ALL_EMPLOYEES>"
         return xml
 
     elif root == "department":
         children = []
+        xml += "<ALL_DEPARTMENTS>"
         for dept in documents:
             dname = dept["DNAME"]
             dnumber = dept["DNUMBER"]
             mgr_lname = dept["MGR_LNAME"]
             mgr_fname = dept["MGR_FNAME"]
-            d = f'<DEPARTMENT DNAME="{dname}" DNUMBER="{dnumber}" MGR_LNAME="{mgr_lname}" MGR_FNAME="{mgr_fname}">\n'
-            d += f"\t<EMPLOYEES>\n"
+            d = f'\t<DEPARTMENT DNAME="{dname}" DNUMBER="{dnumber}" MGR_LNAME="{mgr_lname}" MGR_FNAME="{mgr_fname}">\n'
+            d += f"\t\t<EMPLOYEES>\n"
             for emp in dept["EMPLOYEES"]:
                 emp_lname = emp["EMP_LNAME"]
                 emp_fname = emp["EMP_FNAME"]
                 salary = emp["EMP_SALARY"]
-                d += f'\t\t<EMPLOYEE EMP_LNAME="{emp_lname}" EMP_FNAME="{emp_fname}" EMP_SALARY={salary} />\n'
-            d += "\t</EMPLOYEES>\n"
-            d += "</DEPARTMENT>"
+                d += f'\t\t\t<EMPLOYEE EMP_LNAME="{emp_lname}" EMP_FNAME="{emp_fname}" EMP_SALARY={salary} />\n'
+            d += "\t\t</EMPLOYEES>\n"
+            d += "\t</DEPARTMENT>"
             children.append(d)
         xml += "\n".join(children)
+        xml += "\n</ALL_DEPARTMENTS>"
         return xml
     print("Unknown document root")
     return None
