@@ -6,7 +6,7 @@
 
 Student ID | Student Name | Contribution
 ---|---|---
-1001767678 | Harshavardhan Ramamurthy | MySQL setup, create-table script, clear_data(), load_data()
+1001767678 | Harshavardhan Ramamurthy | MySQL setup, MongoDB setup, create-table script, clear_data(), load_mysql_table(), fetch_as_document(), load_to_mongodb(), fetch_as_relational(), format_as_xml(), main driver
 1001767677 | Karan Rajpal | 
 
 ## Description
