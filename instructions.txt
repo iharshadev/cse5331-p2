@@ -1,0 +1,7 @@
+1. Install the necessary dependencies by executing `pip install -r requirements.txt` in the console
+2. Add the database credentials for MySQL and MongoDB in `config.py`
+3. Execute the program by running `python main.py` in the console and follow the instructions on the screen
+
+NOTE:
+- The data required by the `DEPARTMENT`, `DEPT_LOCATIONS`, `EMPLOYEE`, `PROJECT`, and `WORKS_ON ` tables are present in the respective text files under the `data/` directory
+- The SQL scripts required to create the necessary tables, Insert the necessary data and to convert the query results to JSON objects are present in the `scripts/` directory
