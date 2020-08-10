@@ -207,15 +207,15 @@ mongo_client = pymongo.MongoClient(f"mongodb+srv://{mp.user}:{mp.password}@{mp.h
 print(f"Data loaded to MySQL successfully. Query the above tables in {sql_props.dbname} database in MySQL to verify.")
 
 for root in ["project", "employee", "department"]:
-    input(f"Press any key to display data in relational format for {root}")
+    input(f"Press ENTER key to display data in relational format for {root}")
     print(tabulate(fetch_as_relational(root), headers=header_lookup[root], tablefmt="psql"))
-    input(f"Press any key to load data to MongoDB in document format for {root}")
+    input(f"Press ENTER key to load data to MongoDB in document format for {root}")
     documents = fetch_as_document(root)
     load_to_mongodb(documents, root)
-    input(f"Press any key to display data in JSON format for {root}")
+    input(f"Press ENTER key to display data in JSON format for {root}")
     documents = fetch_from_mongodb(root)
     print(f"{'-' * 30} FOR EXTRA CREDIT : XML document format {'-' * 30}")
-    input(f"Press any key to display data in XML format for {root}")
+    input(f"Press ENTER key to display data in XML format for {root}")
     print(format_as_xml(documents, root))
 
 mysql_client.close()
