@@ -7,14 +7,12 @@
 In this project, we learn how to export data from a Flat/Relational to a Document-oriented format (JSON and XML), 
 and import this to MongoDB. The objective of this project is to understand the differences of storing data in a RDBMS vs Document-based NOSQL System. Additionally, we look at parsing the JSON from MongoDB into an XML which is often useful in while building APIs and even migrating to another RDBMS.
 
-> Add description about how we are converting the tabular data to the JSON and the JSON to XML
-
 ## Contributors
 
 Student ID | Student Name | Contribution
 ---|---|---
-1001767678 | Harshavardhan Ramamurthy | MySQL setup, MongoDB setup, create-table script, clear_data(), load_mysql_table(), Project as root, load_to_mongodb(), fetch_as_relational(), Department as root
-1001767677 | Karan Rajpal | Documentation, format_as_xml(), Main-driver, Employee-as-root
+1001767678 | Harshavardhan Ramamurthy | MongoDB setup, create-table script, clear_data(), load_mysql_table(), Project-as-root, load_to_mongodb(), fetch_as_relational(), Department as root
+1001767677 | Karan Rajpal | MySQL setup, Documentation, format_as_xml(), Main-driver, Employee-as-root
 
 ## Environment
 
@@ -41,17 +39,32 @@ Student ID | Student Name | Contribution
 3. Data retrieved in Document format(JSON) with `PROJECT` and `EMPLOYEE` respectively as root
 4. Data in document format is loaded to MongoDB and retrieved
 
-### `PROJECT` as root
+#### `PROJECT` as root
 In relational format, the project name, number & department name are redundant for every employee that works on it. 
 Therefore the employee details are nested in the `project` document using `JSON_ARRAYAGG` function in 
 SQL by `GROUP`ing `BY` project name, number & department name. 
 
-### `EMPLOYEE` as root
+#### `EMPLOYEE` as root
 In relational format, the employee lname, fname, department name are redundant for every project that the employee works on. 
 Therefore the project details are nested in the `employee` document using `JSON_ARRAYAGG` function in 
 SQL by `GROUP`ing `BY` employee lname, fname, department name.
 
-Reference: [`JSON_ARRAYAGG`]()
+Reference: [`JSON_ARRAYAGG`](https://dev.mysql.com/doc/refman/8.0/en/aggregate-functions.html#function_json-arrayagg)
+
+#### Formatting result as XML
+Data retrieved in `JSON` format contains nested JSON objects for Employee and Project details respectively for 
+Project and Employee as root. These result-sets are then iterated over to form an XML document that conforms to the same 
+nested structure as the `JSON` result-set in the `format_as_xml()`
+
+#### `DEPARTMENT` as root
+Since we need to retrieve details of 
+
+1. `EMPLOYEE` who manages the `DEPARTMENT` and
+2. `EMPLOYEE`s who belong to that `DEPARTMENT`
+
+The `EMPLOYEE` table is `JOIN`ed twice - once based on `mgr_ssn` and next based on `Essn` and `JSON_ARRAYAGG` is used 
+in the same query to nest details of the `EMPLOYEE`s who belong to each department by `GROUP`ing `BY` dept number, name,
+mgr_lname and mgr_fname 
 
 ## Instructions
 
@@ -80,6 +93,9 @@ Reference: [`JSON_ARRAYAGG`]()
 5. Execute the program by running `python main.py` in the console and follow the instructions on the screen
 
 ### Output
+
+> Once the project is run, it prompts the user to press ENTER at various stages. You can verify that the data is loaded to
+> the said data-store by querying the respective data-store before pressing the ENTER key
    ```
    ❯ python main.py
    Data loaded to MySQL successfully. Query the above tables in project2 database in MySQL to verify.
@@ -313,6 +329,3 @@ Reference: [`JSON_ARRAYAGG`]()
 ## TODO
 
 - Fix XML export
-- Uncomment load data code in main.py
-- Update contributions
-- Add description about how we are converting the tabular data to the JSON and the JSON to XML

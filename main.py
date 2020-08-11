@@ -195,27 +195,27 @@ mysql_client = pymysql.connect(host=sql_props.host,
 mongo_client = pymongo.MongoClient(f"mongodb+srv://{mp.user}:{mp.password}@{mp.host}/{mp.dbname}")
 
 # empties the tables so data from files in `data/` directory is freshly inserted
-# clear_tables()
+clear_tables()
 
 # Load data from files in `data/` directory to MySQL tables. ORDER IS IMPORTANT!
-# load_mysql_table("DEPARTMENT")
-# load_mysql_table("DEPT_LOCATIONS")
-# load_mysql_table("EMPLOYEE")
-# load_mysql_table("PROJECT")
-# load_mysql_table("WORKS_ON")
+load_mysql_table("DEPARTMENT")
+load_mysql_table("DEPT_LOCATIONS")
+load_mysql_table("EMPLOYEE")
+load_mysql_table("PROJECT")
+load_mysql_table("WORKS_ON")
 
 print(f"Data loaded to MySQL successfully. Query the above tables in {sql_props.dbname} database in MySQL to verify.")
 
 for root in ["project", "employee", "department"]:
-    input(f"Press ENTER key to display data in relational format for {root}")
+    input(f"\nPress ENTER key to display data in relational format for {root}")
     print(tabulate(fetch_as_relational(root), headers=header_lookup[root], tablefmt="psql"))
-    input(f"Press ENTER key to load data to MongoDB in document format for {root}")
+    input(f"\nPress ENTER key to load data to MongoDB in document format for {root}")
     documents = fetch_as_document(root)
     load_to_mongodb(documents, root)
-    input(f"Press ENTER key to display data in JSON format for {root}")
+    input(f"\nPress ENTER key to display data in JSON format for {root}")
     documents = fetch_from_mongodb(root)
     print(f"{'-' * 30} FOR EXTRA CREDIT : XML document format {'-' * 30}")
-    input(f"Press ENTER key to display data in XML format for {root}")
+    input(f"\nPress ENTER key to display data in XML format for {root}")
     print(format_as_xml(documents, root))
 
 mysql_client.close()
