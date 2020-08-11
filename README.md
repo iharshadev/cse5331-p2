@@ -195,7 +195,6 @@ mgr_lname and mgr_fname
    35 documents inserted to the employees collection in MongoDB successfully
    Press ENTER key to display data in JSON format for employee
    Documents retrieved from the collection employees in MongoDB:
-   
    {'DNAME': 'Software',
     'EMP_FNAME': 'Jose',
     'EMP_LNAME': 'Barbara',
@@ -219,10 +218,8 @@ mgr_lname and mgr_fname
     'PROJECTS': [{'HOURS': 30, 'PNAME': 'Newbenefits', 'PNUMBER': 30},
                  {'HOURS': 10, 'PNAME': 'Computerization', 'PNUMBER': 10}],
     '_id': ObjectId('5f31c699c2210e84ef83adfb')}
-   
    ------------------------------ FOR EXTRA CREDIT : XML document format ------------------------------
    Press ENTER key to display data in XML format for employee
-   
    <?xml version="1.0" encoding="UTF-8"?>
    <ALL_EMPLOYEES>
    	<EMPLOYEE EMP_LNAME="Barbara" EMP_FNAME="Jose" DNAME="Software">
@@ -239,7 +236,6 @@ mgr_lname and mgr_fname
    		</PROJECTS>
    	</EMPLOYEE>
    </ALL_EMPLOYEES>
-   
    Press ENTER key to display data in relational format for department
    +----------------+----------------+-----------------+-----------------+-------------+-------------+--------------+
    | Dept. Name     |   Dept. Number | Manager Lname   | Manager Fname   | Emp Lname   | Emp Fname   |   Emp Salary |
@@ -254,14 +250,11 @@ mgr_lname and mgr_fname
    | Software       |              6 | James           | Jared           | Wolowitz    | Penny       |        17000 |
    | Software       |              6 | James           | Jared           | Yu          | Alex        |        50000 |
    +----------------+----------------+-----------------+-----------------+-------------+-------------+--------------+
-   
    Press ENTER key to load data to MongoDB in document format for department
    MongoDB collection departments emptied for fresh insertion
    8 documents inserted to the departments collection in MongoDB successfully
    Press ENTER key to display data in JSON format for department
-   
    Documents retrieved from the collection departments in MongoDB:
-   
    {'DNAME': 'Administration',
     'DNUMBER': 4,
     'EMPLOYEES': [{'EMP_FNAME': 'Cameron',
