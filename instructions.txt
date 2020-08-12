@@ -1,18 +1,19 @@
-** [IMPORTANT] This project relies heavily on file-names. Please DO NOT change any filename in the project **
+** [IMPORTANT NOTICE] This project relies heavily on file-names. Please DO NOT change any filename in the project **
+** For demo purpose, we've set-up MySQL and MongoDB on cloud with the necessary tables created and sufficient user-privileges. You could just do step 1 and 2 to run the project **
 
 1. Install the necessary dependencies by executing `pip install -r requirements.txt` in the console
+
 2. Execute the program by running `python main.py` in the console and follow the instructions on the screen
 
-
-If you want to test/run the project with your own instance of MySQL and MongoDB, then
+If you want to test/run the project with your own/different instance of MySQL and MongoDB, then
 
 1. Create a dedicated database in MySQL and MongoDB for this project
 
-2. Create the DEPARTMENT, DEPT_LOCATIONS, EMPLOYEE, PROJECT, and WORKS_ON  tables using scripts/create-tables.sql
+2. Create the `DEPARTMENT`, `DEPT_LOCATIONS`, `EMPLOYEE`, `PROJECT`, and `WORKS_ON ` tables using `scripts/create-tables.sql`
 
-3. Ensure that the `user` has sufficient privileges(INSERT and DELETE) on the database in both MySQL and MongoDB
+3. Ensure that the `user` has sufficient privileges(`INSERT` and `DELETE`) on the database in both MySQL and MongoDB.
 
-4. Add the credentials for MySQL and MongoDB in config.py
+4. Add the credentials for MySQL and MongoDB in `config.py`.
 
 5. Execute the program by running `python main.py` in the console and follow the instructions on the screen
 
